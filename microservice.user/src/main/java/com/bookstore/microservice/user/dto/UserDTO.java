@@ -1,17 +1,13 @@
 package com.bookstore.microservice.user.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class UserDTO {
-
+    private Integer id;
     private String name;
     private String email;
     private String username;
     private String role;
-
-    public UserDTO() {
-    }
+    private Integer status;
 }

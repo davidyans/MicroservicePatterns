@@ -1,54 +1,39 @@
 package com.bookstore.microservice.cart.controllers;
 
-import com.david.bookstore.microservice.cart.domain.Cart;
-import com.david.bookstore.microservice.cart.services.CartService;
+import com.bookstore.microservice.cart.dto.CartDetailDTO;
+import com.bookstore.microservice.cart.services.CartService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/carts")
 public class CartController {
 
-    private final CartService cartService;
+    @Autowired
+    private CartService cartService;
 
-    public CartController(CartService cartService) {
-        this.cartService = cartService;
+    @GetMapping("/{id}/items")
+    public ResponseEntity<List<CartDetailDTO>> getCartItems(@PathVariable Integer id) {
+        return ResponseEntity.ok(cartService.getCartItems(id));
     }
 
-    @GetMapping
-    public List<Cart> getAllCarts() {
-        return cartService.getAllCarts();
+    @PostMapping("/{id}/items")
+    public ResponseEntity<CartDetailDTO> addItemToCart(@PathVariable Integer id, @RequestBody CartDetailDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.addItemToCart(id, dto));
     }
 
-    @GetMapping("/{cartId}")
-    public ResponseEntity<Cart> getCartById(@PathVariable int cartId) {
-        Optional<Cart> cart = cartService.getCartById(cartId);
-        return cart.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @PutMapping("/{id}/items/{itemId}")
+    public ResponseEntity<CartDetailDTO> updateCartItem(@PathVariable Integer id, @PathVariable Integer itemId, @RequestBody CartDetailDTO dto) {
+        return ResponseEntity.ok(cartService.updateCartItem(id, itemId, dto));
     }
 
-    @PostMapping
-    public Cart createCart(@RequestBody Cart cart) {
-        return cartService.createCart(cart);
-    }
-
-    @PutMapping("/{cartId}")
-    public ResponseEntity<Cart> updateCart(@PathVariable int cartId, @RequestBody Cart cart) {
-        if (cartService.getCartById(cartId).isPresent()) {
-            cart.setCartId(cartId);
-            return ResponseEntity.ok(cartService.updateCart(cart));
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    @DeleteMapping("/{cartId}")
-    public ResponseEntity<Void> deleteCart(@PathVariable int cartId) {
-        if (cartService.getCartById(cartId).isPresent()) {
-            cartService.deleteCart(cartId);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    @DeleteMapping("/{id}/items/{itemId}")
+    public ResponseEntity<Void> deleteCartItem(@PathVariable Integer id, @PathVariable Integer itemId) {
+        cartService.deleteCartItem(id, itemId);
+        return ResponseEntity.noContent().build();
     }
 }

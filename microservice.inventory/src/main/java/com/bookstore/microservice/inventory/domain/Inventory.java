@@ -1,16 +1,25 @@
 package com.bookstore.microservice.inventory.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "inventory")
+@Data
 public class Inventory {
-    private int bookId;
-    private int quantity;
-    private LocalDateTime createdDate;
+
+    @Id
+    @Column(name = "book_id")
+    private Integer bookId;
+
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(name = "created_date", updatable = false)
+    private LocalDateTime createdDate = LocalDateTime.now();
+
+    @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 }

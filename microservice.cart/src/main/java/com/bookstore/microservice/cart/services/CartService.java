@@ -1,38 +1,19 @@
 package com.bookstore.microservice.cart.services;
 
-import com.david.bookstore.microservice.cart.domain.Cart;
-import com.david.bookstore.microservice.cart.repository.CartRepository;
-import org.springframework.stereotype.Service;
+import com.bookstore.microservice.cart.dto.CartDTO;
+import com.bookstore.microservice.cart.dto.CartDetailDTO;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class CartService {
+public interface CartService {
+    List<CartDTO> getAllCarts();
+    CartDTO getCartById(Integer cartId);
+    CartDTO createCart(CartDTO cartDTO);
+    CartDTO updateCart(Integer cartId, CartDTO cartDTO);
+    void deleteCart(Integer cartId);
 
-    private final CartRepository cartRepository;
-
-    public CartService(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
-    }
-
-    public List<Cart> getAllCarts() {
-        return cartRepository.getAllCarts();
-    }
-
-    public Optional<Cart> getCartById(int cartId) {
-        return Optional.ofNullable(cartRepository.getCartById(cartId));
-    }
-
-    public Cart createCart(Cart cart) {
-        return cartRepository.createCart(cart);
-    }
-
-    public Cart updateCart(Cart cart) {
-        return cartRepository.updateCart(cart);
-    }
-
-    public void deleteCart(int cartId) {
-        cartRepository.deleteCart(cartId);
-    }
+    List<CartDetailDTO> getCartItems(Integer cartId);
+    CartDetailDTO addItemToCart(Integer cartId, CartDetailDTO cartDetailDTO);
+    CartDetailDTO updateCartItem(Integer cartId, Integer cartDetailId, CartDetailDTO cartDetailDTO);
+    void deleteCartItem(Integer cartId, Integer cartDetailId);
 }
