@@ -1,13 +1,16 @@
 package com.bookstore.microservice.order.services.implementation;
 
+import com.bookstore.microservice.order.config.RabbitMQConfig;
 import com.bookstore.microservice.order.domain.Order;
 import com.bookstore.microservice.order.dto.OrderDTO;
 import com.bookstore.microservice.order.dto.OrderDetailDTO;
+import com.bookstore.microservice.order.events.OrderCreatedEvent;
 import com.bookstore.microservice.order.exceptions.ResourceNotFoundException;
 import com.bookstore.microservice.order.mappers.OrderMapper;
 import com.bookstore.microservice.order.repository.OrderRepository;
 import com.bookstore.microservice.order.services.OrderService;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public List<OrderDTO> getAllOrders() {
@@ -44,7 +50,23 @@ public class OrderServiceImpl implements OrderService {
             order.addItem(detailDTO.getBookId(), detailDTO.getQuantity(), detailDTO.getUnitPrice());
         }
 
-        return OrderMapper.toOrderDTO(orderRepository.save(order));
+        order = orderRepository.save(order);
+
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                order.getOrderId(),
+                order.getUserId(),
+                order.getTotal(),
+                orderDTO.getOrderDetails()
+        );
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.ORDER_EXCHANGE,
+                RabbitMQConfig.ORDER_CREATED_RK,
+                event
+        );
+
+
+        return OrderMapper.toOrderDTO(order);
     }
 
     @Override
