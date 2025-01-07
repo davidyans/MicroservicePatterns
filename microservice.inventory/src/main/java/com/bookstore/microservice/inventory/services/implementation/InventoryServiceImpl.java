@@ -3,6 +3,7 @@ package com.bookstore.microservice.inventory.services.implementation;
 import com.bookstore.microservice.inventory.domain.Inventory;
 import com.bookstore.microservice.inventory.dto.InventoryDTO;
 import com.bookstore.microservice.inventory.exceptions.ResourceNotFoundException;
+import com.bookstore.microservice.inventory.mappers.InventoryMapper;
 import com.bookstore.microservice.inventory.repository.InventoryRepository;
 import com.bookstore.microservice.inventory.services.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class InventoryServiceImpl implements InventoryService {
     public List<InventoryDTO> getAllItems() {
         return inventoryRepository.findAll()
                 .stream()
-                .map(this::convertToDTO)
+                .map(InventoryMapper::ToInventoryDTO)
                 .collect(Collectors.toList());
     }
 
@@ -30,15 +31,15 @@ public class InventoryServiceImpl implements InventoryService {
     public InventoryDTO getItemById(Integer bookId) {
         Inventory inventory = inventoryRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory item not found for book ID: " + bookId));
-        return convertToDTO(inventory);
+        return InventoryMapper.ToInventoryDTO(inventory);
     }
 
     @Override
     public InventoryDTO addItem(InventoryDTO inventoryDTO) {
-        Inventory inventory = convertToEntity(inventoryDTO);
+        Inventory inventory = InventoryMapper.toInventoryEntity(inventoryDTO);
         inventory.setCreatedDate(LocalDateTime.now());
         inventory.setUpdatedDate(LocalDateTime.now());
-        return convertToDTO(inventoryRepository.save(inventory));
+        return InventoryMapper.ToInventoryDTO(inventoryRepository.save(inventory));
     }
 
     @Override
@@ -47,7 +48,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory item not found for book ID: " + bookId));
         inventory.setQuantity(quantity);
         inventory.setUpdatedDate(LocalDateTime.now());
-        return convertToDTO(inventoryRepository.save(inventory));
+        return InventoryMapper.ToInventoryDTO(inventoryRepository.save(inventory));
     }
 
     @Override
@@ -56,23 +57,5 @@ public class InventoryServiceImpl implements InventoryService {
             throw new ResourceNotFoundException("Inventory item not found for book ID: " + bookId);
         }
         inventoryRepository.deleteById(bookId);
-    }
-
-    private InventoryDTO convertToDTO(Inventory inventory) {
-        InventoryDTO dto = new InventoryDTO();
-        dto.setBookId(inventory.getBookId());
-        dto.setQuantity(inventory.getQuantity());
-        dto.setCreatedDate(inventory.getCreatedDate());
-        dto.setUpdatedDate(inventory.getUpdatedDate());
-        return dto;
-    }
-
-    private Inventory convertToEntity(InventoryDTO dto) {
-        Inventory inventory = new Inventory();
-        inventory.setBookId(dto.getBookId());
-        inventory.setQuantity(dto.getQuantity());
-        inventory.setCreatedDate(dto.getCreatedDate());
-        inventory.setUpdatedDate(dto.getUpdatedDate());
-        return inventory;
     }
 }
