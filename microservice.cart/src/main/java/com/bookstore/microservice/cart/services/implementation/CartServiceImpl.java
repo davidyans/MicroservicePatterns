@@ -5,6 +5,7 @@ import com.bookstore.microservice.cart.domain.CartDetail;
 import com.bookstore.microservice.cart.dto.CartDTO;
 import com.bookstore.microservice.cart.dto.CartDetailDTO;
 import com.bookstore.microservice.cart.exceptions.ResourceNotFoundException;
+import com.bookstore.microservice.cart.mappers.CartMapper;
 import com.bookstore.microservice.cart.repository.CartDetailRepository;
 import com.bookstore.microservice.cart.repository.CartRepository;
 
@@ -28,7 +29,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartDTO> getAllCarts() {
         return cartRepository.findAll().stream()
-                .map(this::convertCartToDTO)
+                .map(CartMapper::toCartDTO)
                 .collect(Collectors.toList());
     }
 
@@ -36,14 +37,13 @@ public class CartServiceImpl implements CartService {
     public CartDTO getCartById(Integer cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found with ID: " + cartId));
-        return convertCartToDTO(cart);
+        return CartMapper.toCartDTO(cart);
     }
 
     @Override
     public CartDTO createCart(CartDTO cartDTO) {
-        Cart cart = convertCartToEntity(cartDTO);
-        cart.setCreatedDate(LocalDateTime.now());
-        return convertCartToDTO(cartRepository.save(cart));
+        Cart cart = CartMapper.toCartEntity(cartDTO);
+        return CartMapper.toCartDTO(cartRepository.save(cart));
     }
 
     @Override
@@ -51,12 +51,14 @@ public class CartServiceImpl implements CartService {
         Cart existingCart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found with ID: " + cartId));
 
-        existingCart.setUserId(cartDTO.getUserId());
-        existingCart.setStatus(cartDTO.getStatus());
-        existingCart.setExpirationDate(cartDTO.getExpirationDate());
-        existingCart.setUpdatedDate(LocalDateTime.now());
+        if (!existingCart.getStatus().equals(cartDTO.getStatus())) {
+            existingCart.setStatus(cartDTO.getStatus());
+            existingCart.markAsUpdated();
+        }
 
-        return convertCartToDTO(cartRepository.save(existingCart));
+        existingCart.setExpirationDate(cartDTO.getExpirationDate());
+
+        return CartMapper.toCartDTO(cartRepository.save(existingCart));
     }
 
     @Override
@@ -71,7 +73,7 @@ public class CartServiceImpl implements CartService {
     public List<CartDetailDTO> getCartItems(Integer cartId) {
         return cartDetailRepository.findByCart_CartId(cartId)
                 .stream()
-                .map(this::convertCartDetailToDTO)
+                .map(CartMapper::toCartDetailDTO)
                 .collect(Collectors.toList());
     }
 
@@ -80,60 +82,36 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
-        CartDetail detail = new CartDetail();
-        detail.setCart(cart);
-        detail.setBookId(dto.getBookId());
-        detail.setQuantity(dto.getQuantity());
-        detail.setUnitPrice(dto.getUnitPrice());
-        detail.setAddedDate(LocalDateTime.now());
+        CartDetail detail = CartMapper.toCartDetailEntity(dto);
+        cart.addItem(detail);
+        cartRepository.save(cart);
 
-        return convertCartDetailToDTO(cartDetailRepository.save(detail));
+        return CartMapper.toCartDetailDTO(detail);
     }
 
     @Override
     public CartDetailDTO updateCartItem(Integer cartId, Integer cartDetailId, CartDetailDTO dto) {
-        CartDetail detail = cartDetailRepository.findById(cartDetailId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart detail not found"));
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found with ID: " + cartId));
 
-        detail.setQuantity(dto.getQuantity());
-        detail.setUnitPrice(dto.getUnitPrice());
-        detail.setUpdatedDate(LocalDateTime.now());
+        cart.updateItem(cartDetailId, dto.getQuantity(), dto.getUnitPrice());
 
-        return convertCartDetailToDTO(cartDetailRepository.save(detail));
+        return CartMapper.toCartDetailDTO(cartRepository.save(cart)
+                .getDetails()
+                .stream()
+                .filter(d -> d.getCartDetailId().equals(cartDetailId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Cart detail not found")));
     }
 
     @Override
     public void deleteCartItem(Integer cartId, Integer cartDetailId) {
-        CartDetail detail = cartDetailRepository.findById(cartDetailId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart detail not found"));
-        cartDetailRepository.delete(detail);
-    }
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found with ID: " + cartId));
 
-    private CartDetailDTO convertCartDetailToDTO(CartDetail detail) {
-        CartDetailDTO dto = new CartDetailDTO();
-        dto.setCartDetailId(detail.getCartDetailId());
-        dto.setBookId(detail.getBookId());
-        dto.setQuantity(detail.getQuantity());
-        dto.setUnitPrice(detail.getUnitPrice());
-        dto.setAddedDate(detail.getAddedDate());
-        return dto;
-    }
+        cart.removeItem(cartDetailId);
+        cart.markAsUpdated();
 
-    private CartDTO convertCartToDTO(Cart cart) {
-        CartDTO dto = new CartDTO();
-        dto.setCartId(cart.getCartId());
-        dto.setUserId(cart.getUserId());
-        dto.setStatus(cart.getStatus());
-        dto.setCreatedDate(cart.getCreatedDate());
-        dto.setExpirationDate(cart.getExpirationDate());
-        return dto;
-    }
-
-    private Cart convertCartToEntity(CartDTO dto) {
-        Cart cart = new Cart();
-        cart.setUserId(dto.getUserId());
-        cart.setStatus(dto.getStatus());
-        cart.setExpirationDate(dto.getExpirationDate());
-        return cart;
+        cartRepository.save(cart);
     }
 }

@@ -1,6 +1,7 @@
 package com.bookstore.microservice.order.controllers;
 
 import com.bookstore.microservice.order.dto.OrderDTO;
+import com.bookstore.microservice.order.dto.OrderDetailDTO;
 import com.bookstore.microservice.order.services.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,5 +41,10 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Integer id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<List<OrderDetailDTO>> getOrderDetails(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.getOrderDetails(id));
     }
 }

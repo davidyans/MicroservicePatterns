@@ -1,6 +1,5 @@
 package com.bookstore.microservice.order.dto;
 
-
 import lombok.Data;
 import java.math.BigDecimal;
 

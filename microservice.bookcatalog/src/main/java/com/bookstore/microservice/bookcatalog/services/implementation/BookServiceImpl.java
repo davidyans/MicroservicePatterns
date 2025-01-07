@@ -4,6 +4,7 @@ import com.bookstore.microservice.bookcatalog.domain.Book;
 import com.bookstore.microservice.bookcatalog.dto.BookDTO;
 import com.bookstore.microservice.bookcatalog.exceptions.BookNotFoundException;
 import com.bookstore.microservice.bookcatalog.exceptions.DuplicateResourceException;
+import com.bookstore.microservice.bookcatalog.mappers.BookMapper;
 import com.bookstore.microservice.bookcatalog.repository.BookRepository;
 import com.bookstore.microservice.bookcatalog.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class BookServiceImpl implements BookService {
     public List<BookDTO> getAllBooks() {
         return bookRepository.findAll()
                 .stream()
-                .map(this::convertToDTO)
+                .map(BookMapper::toBookDTO)
                 .collect(Collectors.toList());
     }
 
@@ -31,8 +32,9 @@ public class BookServiceImpl implements BookService {
     public BookDTO getBookById(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + id));
-        return convertToDTO(book);
+        return BookMapper.toBookDTO(book);
     }
+
 
     @Override
     public BookDTO createBook(BookDTO bookDTO) {
@@ -40,13 +42,13 @@ public class BookServiceImpl implements BookService {
             throw new DuplicateResourceException("Book already exists with ID: " + bookDTO.getIdBook());
         }
 
-        Book book = convertToEntity(bookDTO);
+        Book book = BookMapper.toBookEntity(bookDTO);
         book.setCreatedAt(LocalDateTime.now());
         book.setUpdatedAt(LocalDateTime.now());
         book.setStatus(1);
 
         Book savedBook = bookRepository.save(book);
-        return convertToDTO(savedBook);
+        return BookMapper.toBookDTO(savedBook);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class BookServiceImpl implements BookService {
         existingBook.setUpdatedAt(LocalDateTime.now());
 
         Book updatedBook = bookRepository.save(existingBook);
-        return convertToDTO(updatedBook);
+        return BookMapper.toBookDTO(updatedBook);
     }
 
     @Override
@@ -74,32 +76,5 @@ public class BookServiceImpl implements BookService {
             throw new BookNotFoundException("Book not found with ID: " + id);
         }
         bookRepository.deleteById(id);
-    }
-
-    private BookDTO convertToDTO(Book book) {
-        BookDTO dto = new BookDTO();
-        dto.setIdBook(book.getId());
-        dto.setTitle(book.getTitle());
-        dto.setDescription(book.getDescription());
-        dto.setPrice(book.getPrice());
-        dto.setPublicationDate(book.getPublicationDate());
-        dto.setLanguage(book.getLanguage());
-        dto.setNumberOfPages(book.getNumberOfPages());
-        dto.setIsbn(book.getIsbn());
-        dto.setStockStatus(book.getStockStatus());
-        return dto;
-    }
-
-    private Book convertToEntity(BookDTO dto) {
-        Book book = new Book();
-        book.setTitle(dto.getTitle());
-        book.setDescription(dto.getDescription());
-        book.setPrice(dto.getPrice());
-        book.setPublicationDate(dto.getPublicationDate());
-        book.setLanguage(dto.getLanguage());
-        book.setNumberOfPages(dto.getNumberOfPages());
-        book.setIsbn(dto.getIsbn());
-        book.setStockStatus(dto.getStockStatus());
-        return book;
     }
 }

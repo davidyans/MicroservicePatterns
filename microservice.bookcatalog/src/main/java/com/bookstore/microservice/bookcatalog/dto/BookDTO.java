@@ -1,12 +1,10 @@
 package com.bookstore.microservice.bookcatalog.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 public class BookDTO {
     private Long idBook;
     private String title;

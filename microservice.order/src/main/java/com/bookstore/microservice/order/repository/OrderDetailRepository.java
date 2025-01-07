@@ -4,5 +4,9 @@ import com.bookstore.microservice.order.domain.OrderDetail;
 import com.bookstore.microservice.order.domain.OrderDetailId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, OrderDetailId> {
+    List<OrderDetail> findByOrder_OrderId(Integer orderId);
+    void deleteAllByOrder_OrderId(Integer orderId);
 }

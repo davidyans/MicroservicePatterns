@@ -1,18 +1,16 @@
 package com.bookstore.microservice.order.services.implementation;
 
 import com.bookstore.microservice.order.domain.Order;
-import com.bookstore.microservice.order.domain.OrderDetail;
 import com.bookstore.microservice.order.dto.OrderDTO;
 import com.bookstore.microservice.order.dto.OrderDetailDTO;
 import com.bookstore.microservice.order.exceptions.ResourceNotFoundException;
+import com.bookstore.microservice.order.mappers.OrderMapper;
 import com.bookstore.microservice.order.repository.OrderRepository;
 import com.bookstore.microservice.order.services.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +22,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> getAllOrders() {
-        return orderRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
+        return orderRepository.findAll().stream()
+                .map(OrderMapper::toOrderDTO)
                 .collect(Collectors.toList());
     }
 
@@ -34,30 +31,48 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO getOrderById(Integer orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
-        return convertToDTO(order);
+        return OrderMapper.toOrderDTO(order);
     }
 
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         Order order = new Order();
         order.setUserId(orderDTO.getUserId());
-        order.setOrderDate(LocalDateTime.now());
-        order.setStatus("PENDING");
-        order.setTotal(calculateTotal(orderDTO.getOrderDetails()));
-        order.setUpdatedDate(LocalDateTime.now());
+        order.setStatus("CREATED");
 
-        return convertToDTO(orderRepository.save(order));
+        for (OrderDetailDTO detailDTO : orderDTO.getOrderDetails()) {
+            order.addItem(detailDTO.getBookId(), detailDTO.getQuantity(), detailDTO.getUnitPrice());
+        }
+
+        return OrderMapper.toOrderDTO(orderRepository.save(order));
     }
 
     @Override
     public OrderDTO updateOrder(Integer orderId, OrderDTO orderDTO) {
+        Order existingOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+
+        if (!existingOrder.getStatus().equals(orderDTO.getStatus())) {
+            existingOrder.setStatus(orderDTO.getStatus());
+            existingOrder.markAsUpdated();
+        }
+
+        existingOrder.clearItems();
+        for (OrderDetailDTO detailDTO : orderDTO.getOrderDetails()) {
+            existingOrder.addItem(detailDTO.getBookId(), detailDTO.getQuantity(), detailDTO.getUnitPrice());
+        }
+
+        return OrderMapper.toOrderDTO(orderRepository.save(existingOrder));
+    }
+
+    @Override
+    public List<OrderDetailDTO> getOrderDetails(Integer orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
 
-        order.setStatus(orderDTO.getStatus());
-        order.setUpdatedDate(LocalDateTime.now());
-
-        return convertToDTO(orderRepository.save(order));
+        return order.getOrderDetails().stream()
+                .map(OrderMapper::toOrderDetailDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -66,21 +81,5 @@ public class OrderServiceImpl implements OrderService {
             throw new ResourceNotFoundException("Order not found with ID: " + orderId);
         }
         orderRepository.deleteById(orderId);
-    }
-
-    private BigDecimal calculateTotal(List<OrderDetailDTO> details) {
-        return details.stream()
-                .map(d -> d.getUnitPrice().multiply(BigDecimal.valueOf(d.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    private OrderDTO convertToDTO(Order order) {
-        OrderDTO dto = new OrderDTO();
-        dto.setOrderId(order.getOrderId());
-        dto.setUserId(order.getUserId());
-        dto.setOrderDate(order.getOrderDate());
-        dto.setStatus(order.getStatus());
-        dto.setTotal(order.getTotal());
-        return dto;
     }
 }

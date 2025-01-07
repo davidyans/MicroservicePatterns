@@ -1,5 +1,6 @@
 package com.bookstore.microservice.cart.controllers;
 
+import com.bookstore.microservice.cart.dto.CartDTO;
 import com.bookstore.microservice.cart.dto.CartDetailDTO;
 import com.bookstore.microservice.cart.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,32 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+
+    @GetMapping
+    public ResponseEntity<List<CartDTO>> getAllCarts() {
+        return ResponseEntity.ok(cartService.getAllCarts());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CartDTO> getCartById(@PathVariable Integer id) {
+        return ResponseEntity.ok(cartService.getCartById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<CartDTO> createCart(@RequestBody CartDTO cartDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartService.createCart(cartDTO));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CartDTO> updateCart(@PathVariable Integer id, @RequestBody CartDTO cartDTO) {
+        return ResponseEntity.ok(cartService.updateCart(id, cartDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCart(@PathVariable Integer id) {
+        cartService.deleteCart(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping("/{id}/items")
     public ResponseEntity<List<CartDetailDTO>> getCartItems(@PathVariable Integer id) {

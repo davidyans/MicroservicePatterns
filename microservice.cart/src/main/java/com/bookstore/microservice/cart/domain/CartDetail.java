@@ -2,11 +2,9 @@ package com.bookstore.microservice.cart.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "cart_detail")
 public class CartDetail {
@@ -28,7 +26,7 @@ public class CartDetail {
     @Column(name = "unit_price", nullable = false)
     private Double unitPrice;
 
-    @Column(name = "added_date", nullable = false)
+    @Column(name = "added_date", nullable = false, updatable = false)
     private LocalDateTime addedDate = LocalDateTime.now();
 
     @Column(name = "updated_date")

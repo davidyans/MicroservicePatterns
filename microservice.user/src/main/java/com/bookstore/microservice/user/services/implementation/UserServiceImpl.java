@@ -4,6 +4,7 @@ import com.bookstore.microservice.user.domain.User;
 import com.bookstore.microservice.user.dto.UserDTO;
 import com.bookstore.microservice.user.exceptions.DuplicateResourceException;
 import com.bookstore.microservice.user.exceptions.ResourceNotFoundException;
+import com.bookstore.microservice.user.mappers.UserMapper;
 import com.bookstore.microservice.user.repository.UserRepository;
 import com.bookstore.microservice.user.services.UserService;
 
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(UserMapper::toUserDTO)
                 .collect(Collectors.toList());
     }
 
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserById(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
-        return convertToDTO(user);
+        return UserMapper.toUserDTO(user);
     }
 
     @Override
@@ -40,9 +41,9 @@ public class UserServiceImpl implements UserService {
                 userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
             throw new DuplicateResourceException("Email or Username already exists.");
         }
-        User user = convertToEntity(userDTO);
+        User user = UserMapper.toUserEntity(userDTO);
         user.setCreatedAt(LocalDateTime.now());
-        return convertToDTO(userRepository.save(user));
+        return UserMapper.toUserDTO(userRepository.save(user));
     }
 
     @Override
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDTO.getUsername());
         user.setRole(userDTO.getRole());
         user.setUpdatedAt(LocalDateTime.now());
-        return convertToDTO(userRepository.save(user));
+        return UserMapper.toUserDTO(userRepository.save(user));
     }
 
     @Override
@@ -64,27 +65,5 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("User not found with ID: " + id);
         }
         userRepository.deleteById(id);
-    }
-
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setUsername(user.getUsername());
-        dto.setRole(user.getRole());
-        dto.setStatus(user.getStatus());
-        return dto;
-    }
-
-    private User convertToEntity(UserDTO dto) {
-        User user = new User();
-        user.setId(dto.getId());
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
-        user.setRole(dto.getRole());
-        user.setStatus(dto.getStatus());
-        return user;
     }
 }
