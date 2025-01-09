@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class CartDTO {
     private Integer cartId;
-    private Integer userId;
     private String status;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

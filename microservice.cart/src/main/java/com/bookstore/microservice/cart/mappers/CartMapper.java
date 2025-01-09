@@ -12,7 +12,6 @@ public class CartMapper {
     public static CartDTO toCartDTO(Cart cart) {
         CartDTO dto = new CartDTO();
         dto.setCartId(cart.getCartId());
-        dto.setUserId(cart.getUserId());
         dto.setStatus(cart.getStatus());
         dto.setCreatedDate(cart.getCreatedDate());
         dto.setUpdatedDate(cart.getUpdatedDate());
@@ -25,7 +24,6 @@ public class CartMapper {
 
     public static Cart toCartEntity(CartDTO dto) {
         Cart cart = new Cart();
-        cart.setUserId(dto.getUserId());
         cart.setStatus(dto.getStatus());
         cart.setExpirationDate(dto.getExpirationDate());
         return cart;

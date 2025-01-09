@@ -16,9 +16,6 @@ public class Cart {
     @Column(name = "cart_id")
     private Integer cartId;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
-
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate = LocalDateTime.now();
 
@@ -39,7 +36,6 @@ public class Cart {
         item.setCart(this);
         markAsUpdated();
     }
-
 
     public void updateItem(Integer itemId, Integer quantity, Double unitPrice) {
         CartDetail detail = this.details.stream()
