@@ -50,7 +50,6 @@ public class PaymentServiceImpl implements PaymentService {
         existingPayment.setPayMethod(paymentDTO.getPayMethod());
         existingPayment.setStatus(paymentDTO.getStatus());
         existingPayment.setAmount(paymentDTO.getAmount());
-        existingPayment.setExternalTransactionId(paymentDTO.getExternalTransactionId());
         existingPayment.setPaymentDetails(paymentDTO.getPaymentDetails());
         existingPayment.setPaymentDate(paymentDTO.getPaymentDate());
 

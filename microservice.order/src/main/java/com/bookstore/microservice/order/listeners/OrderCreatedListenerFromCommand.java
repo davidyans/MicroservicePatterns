@@ -23,7 +23,6 @@ public class OrderCreatedListenerFromCommand {
             // Crear y guardar la orden en la BD del MS original
             Order newOrder = new Order();
             newOrder.setOrderId(event.getOrderId());
-            newOrder.setUserId(event.getUserId());
             newOrder.setStatus("CREATED");
             newOrder.setOrderDate(java.time.LocalDateTime.now());
             // O si en tu evento traes la fecha, podrías usarla

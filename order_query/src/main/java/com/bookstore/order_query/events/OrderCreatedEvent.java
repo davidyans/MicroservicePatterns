@@ -11,16 +11,14 @@ import java.util.List;
 
 public class OrderCreatedEvent implements Serializable {
     private Integer orderId;
-    private Integer userId;
     private BigDecimal total;
     private List<OrderDetailDTO> orderDetails;
 
     public OrderCreatedEvent() {
     }
 
-    public OrderCreatedEvent(Integer orderId, Integer userId, BigDecimal total, List<OrderDetailDTO> orderDetails) {
+    public OrderCreatedEvent(Integer orderId, BigDecimal total, List<OrderDetailDTO> orderDetails) {
         this.orderId = orderId;
-        this.userId = userId;
         this.total = total;
         this.orderDetails = orderDetails;
     }
@@ -31,14 +29,6 @@ public class OrderCreatedEvent implements Serializable {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public BigDecimal getTotal() {

@@ -19,9 +19,6 @@ public class OrderHistory {
     @Column(name = "order_id", nullable = false)
     private Integer orderId;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
-
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
@@ -51,14 +48,6 @@ public class OrderHistory {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public LocalDateTime getOrderDate() {

@@ -28,7 +28,11 @@ public class Book {
 
     private String isbn;
 
-    private Integer publisherId;
+    private String publisherName;
+
+    @Lob
+    @Column(columnDefinition = "BYTEA")
+    private byte[] coverImage;
 
     private Integer stockStatus = 1;
 

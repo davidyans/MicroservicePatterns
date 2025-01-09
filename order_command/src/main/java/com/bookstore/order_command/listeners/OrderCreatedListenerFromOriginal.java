@@ -22,8 +22,7 @@ public class OrderCreatedListenerFromOriginal {
         if (!exists) {
             // Crear y guardar la orden en la BD local de order-command
             Order newOrder = new Order();
-            newOrder.setOrderId(event.getOrderId()); // asumiendo que en la entidad uses manual set
-            newOrder.setUserId(event.getUserId());
+            newOrder.setOrderId(event.getOrderId());
             newOrder.setStatus("CREATED");
             newOrder.setOrderDate(java.time.LocalDateTime.now());
             // O si quieres usar un campo event.getOrderDate() si lo tuvieras

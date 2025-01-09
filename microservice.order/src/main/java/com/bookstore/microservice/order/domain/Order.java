@@ -17,9 +17,6 @@ public class Order {
     @Column(name = "order_id")
     private Integer orderId;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
-
     @Column(name = "order_date", nullable = false, updatable = false)
     private LocalDateTime orderDate = LocalDateTime.now();
 

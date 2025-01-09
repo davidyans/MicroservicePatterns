@@ -43,7 +43,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
         Order order = new Order();
-        order.setUserId(orderDTO.getUserId());
         order.setStatus("CREATED");
 
         for (OrderDetailDTO detailDTO : orderDTO.getOrderDetails()) {
@@ -54,7 +53,6 @@ public class OrderServiceImpl implements OrderService {
 
         OrderCreatedEvent event = new OrderCreatedEvent(
                 order.getOrderId(),
-                order.getUserId(),
                 order.getTotal(),
                 orderDTO.getOrderDetails()
         );

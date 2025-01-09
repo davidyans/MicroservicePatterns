@@ -13,6 +13,5 @@ public class PaymentDTO {
     private String payMethod;
     private String status;
     private BigDecimal amount;
-    private String externalTransactionId;
     private String paymentDetails;
 }

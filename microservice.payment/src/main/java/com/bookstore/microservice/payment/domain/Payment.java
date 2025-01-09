@@ -31,9 +31,6 @@ public class Payment {
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "external_transaction_id", length = 100)
-    private String externalTransactionId;
-
     @Column(name = "payment_details", columnDefinition = "TEXT")
     private String paymentDetails;
 }

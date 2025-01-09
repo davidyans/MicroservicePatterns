@@ -8,7 +8,6 @@ import java.util.List;
 
 public class OrderDTO {
     private Integer orderId;
-    private Integer userId;
     private LocalDateTime orderDate;
     private BigDecimal total;
     private String status;
@@ -21,14 +20,6 @@ public class OrderDTO {
 
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public LocalDateTime getOrderDate() {

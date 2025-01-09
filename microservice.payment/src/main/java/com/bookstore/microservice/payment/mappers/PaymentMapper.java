@@ -16,7 +16,6 @@ public class PaymentMapper {
         dto.setPayMethod(payment.getPayMethod());
         dto.setStatus(payment.getStatus());
         dto.setAmount(payment.getAmount());
-        dto.setExternalTransactionId(payment.getExternalTransactionId());
         dto.setPaymentDetails(payment.getPaymentDetails());
         return dto;
     }
@@ -32,7 +31,6 @@ public class PaymentMapper {
         payment.setPayMethod(dto.getPayMethod());
         payment.setStatus(dto.getStatus());
         payment.setAmount(dto.getAmount());
-        payment.setExternalTransactionId(dto.getExternalTransactionId());
         payment.setPaymentDetails(dto.getPaymentDetails());
         return payment;
     }

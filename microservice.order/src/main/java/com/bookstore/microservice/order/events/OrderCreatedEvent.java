@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderCreatedEvent implements Serializable {
     private Integer orderId;
-    private Integer userId;
     private BigDecimal total;
     private List<OrderDetailDTO> orderDetails;
 }

@@ -32,7 +32,6 @@ public class OrderCreatedEventListener {
         // Crear OrderHistory
         OrderHistory oh = new OrderHistory();
         oh.setOrderId(event.getOrderId());
-        oh.setUserId(event.getUserId());
         oh.setOrderDate(LocalDateTime.now());
         // Podrías usar la fecha que venga en el evento si existe
         oh.setTotal(event.getTotal() != null ? event.getTotal() : BigDecimal.ZERO);
