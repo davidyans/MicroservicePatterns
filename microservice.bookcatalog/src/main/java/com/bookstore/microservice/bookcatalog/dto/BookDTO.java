@@ -16,5 +16,4 @@ public class BookDTO {
     private String isbn;
     private String publisherName;
     private Integer stockStatus;
-    private byte[] coverImage;
 }

@@ -30,17 +30,14 @@ public class ReserveInventoryListener {
 
         List<ReserveInventoryItem> itemsToReserve = command.getItems();
 
-        // 1) Validar stock para TODOS los libros primero
         for (ReserveInventoryItem item : itemsToReserve) {
             Optional<Inventory> invOpt = inventoryRepository.findById(item.getBookId());
             if (invOpt.isEmpty()) {
-                // No existe el libro en inventario => Fallo y salimos
                 publishFailedEvent(command, "Book not found in inventory", itemsToReserve);
                 return;
             }
             Inventory inv = invOpt.get();
             if (inv.getQuantity() < item.getQuantityNeeded()) {
-                // No hay suficiente stock => Fallo y salimos
                 String reason = String.format(
                         "Not enough stock for bookId=%d. Requested=%d, Available=%d",
                         item.getBookId(), item.getQuantityNeeded(), inv.getQuantity()
@@ -50,8 +47,6 @@ public class ReserveInventoryListener {
             }
         }
 
-        // 2) Si llegamos aquí, significa que TODOS tienen stock suficiente.
-        // Procedemos a deducir el stock de cada libro
         List<ReservedBookInfo> reservedBooks = new ArrayList<>();
         for (ReserveInventoryItem item : itemsToReserve) {
             Inventory inv = inventoryRepository.findById(item.getBookId()).get();
@@ -61,19 +56,13 @@ public class ReserveInventoryListener {
             inv.setUpdatedDate(LocalDateTime.now());
             inventoryRepository.save(inv);
 
-            // Aquí es donde publicas el evento de actualización de stock
-            // si la cantidad llega a cero (o cambia de 0 a > 0, etc.)
             if (newQuantity == 0) {
                 publishStockStatusUpdated(inv.getBookId(), 0);
             }
-            // Si deseas manejar también la reposición (por ejemplo, si pasa de 0 a >0),
-            // lo harías análogamente en otro método/endpoint.
 
-            // Construir la lista de reservas efectivas
             reservedBooks.add(new ReservedBookInfo(item.getBookId(), item.getQuantityNeeded()));
         }
 
-        // 3) Publicar evento de éxito con la lista de todos los libros reservados
         InventoryReservedEvent successEvent = new InventoryReservedEvent(
                 command.getOrderId(),
                 reservedBooks

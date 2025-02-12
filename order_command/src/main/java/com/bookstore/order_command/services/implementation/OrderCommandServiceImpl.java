@@ -22,7 +22,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
-        // 1. Guardar la orden en la BD local
+        // BD
         Order order = new Order();
         order.setStatus("CREATED");
 
@@ -37,7 +37,7 @@ public class OrderCommandServiceImpl implements OrderCommandService {
 
         order = orderRepository.save(order);
 
-        // 2. Publicar evento
+        // Evento
         OrderCreatedEvent event = new OrderCreatedEvent(
                 order.getOrderId(),
                 order.getTotal(),

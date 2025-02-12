@@ -55,12 +55,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public InventoryDTO updateItem(Integer bookId, Integer quantity) {
+    public InventoryDTO updateItem(Integer bookId, InventoryDTO inventoryDTO) {
         validateBookExists(bookId);
 
         Inventory inventory = inventoryRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory item not found for book ID: " + bookId));
-        inventory.setQuantity(quantity);
+        inventory.setQuantity(inventoryDTO.getQuantity());
         inventory.setUpdatedDate(LocalDateTime.now());
         return InventoryMapper.ToInventoryDTO(inventoryRepository.save(inventory));
     }

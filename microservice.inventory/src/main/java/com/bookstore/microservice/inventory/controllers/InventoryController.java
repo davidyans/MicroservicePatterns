@@ -33,8 +33,8 @@ public class InventoryController {
     }
 
     @PutMapping("/{bookId}")
-    public ResponseEntity<InventoryDTO> updateItem(@PathVariable Integer bookId, @RequestParam Integer quantity) {
-        return ResponseEntity.ok(inventoryService.updateItem(bookId, quantity));
+    public ResponseEntity<InventoryDTO> updateItem(@PathVariable Integer bookId, @RequestBody InventoryDTO inventoryDTO) {
+        return ResponseEntity.ok(inventoryService.updateItem(bookId, inventoryDTO));
     }
 
     @DeleteMapping("/{bookId}")

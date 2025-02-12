@@ -63,4 +63,10 @@ public class CartController {
         cartService.deleteCartItem(id, itemId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{id}/items")
+    public ResponseEntity<Void> deleteAllCartItems(@PathVariable Integer id) {
+        cartService.deleteAllCartItems(id);
+        return ResponseEntity.noContent().build();
+    }
 }

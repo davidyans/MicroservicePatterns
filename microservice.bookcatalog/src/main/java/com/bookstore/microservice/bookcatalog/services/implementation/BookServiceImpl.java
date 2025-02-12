@@ -77,19 +77,4 @@ public class BookServiceImpl implements BookService {
         }
         bookRepository.deleteById(id);
     }
-
-    @Override
-    public void uploadBookCover(Long id, byte[] coverImage) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + id));
-        book.setCoverImage(coverImage);
-        bookRepository.save(book);
-    }
-
-    @Override
-    public byte[] getBookCover(Long id) {
-        return bookRepository.findById(id)
-                .map(Book::getCoverImage)
-                .orElse(null);
-    }
 }

@@ -1,5 +1,6 @@
 package com.bookstore.order_query.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class OrderHistoryDetail {
 
     @ManyToOne
     @JoinColumn(name = "order_history_id")
+    @JsonBackReference
     private OrderHistory orderHistory;
 
     @Column(name = "book_id", nullable = false)

@@ -13,7 +13,7 @@ public class RabbitMQConfigCommand {
 
     public static final String ORDER_EXCHANGE = "order.exchange";
 
-    // Routing keys (mismas que en MS original)
+    // Routing keys
     public static final String ORDER_CREATED_RK = "order.created";
     public static final String ORDER_STATUS_UPDATE_RK = "order.status.update";
 
@@ -22,8 +22,6 @@ public class RabbitMQConfigCommand {
 
     // Cola para escuchar eventos de actualización de estado del MS original
     public static final String ORDER_STATUS_UPDATE_QUEUE_COMMAND = "order.status.update.queue.command";
-
-    // (Si quieres publicar un OrderCreatedEvent desde este MS, reusas el exchange y la misma RK)
 
     @Bean
     public DirectExchange orderExchange() {
@@ -47,7 +45,7 @@ public class RabbitMQConfigCommand {
                 .with(ORDER_CREATED_RK);
     }
 
-    // Cola donde ESTE nuevo MS escuchará "order.status.update" del MS original
+    // Cola escuchará "order.status.update" del MS original
     @Bean
     public Queue orderStatusUpdateQueueCommand() {
         return new Queue(ORDER_STATUS_UPDATE_QUEUE_COMMAND, true);

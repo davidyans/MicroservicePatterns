@@ -11,7 +11,4 @@ public interface BookService {
     BookDTO createBook(BookDTO bookDTO);
     BookDTO updateBook(Long id, BookDTO bookDTO);
     void deleteBook(Long id);
-
-    void uploadBookCover(Long id, byte[] coverImage);
-    byte[] getBookCover(Long id);
 }

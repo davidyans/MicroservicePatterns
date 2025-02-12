@@ -20,7 +20,6 @@ public class BookMapper {
         dto.setIsbn(book.getIsbn());
         dto.setPublisherName(book.getPublisherName()); // Nuevo campo
         dto.setStockStatus(book.getStockStatus());
-        dto.setCoverImage(book.getCoverImage()); // Nuevo campo
         return dto;
     }
 
@@ -38,7 +37,6 @@ public class BookMapper {
         book.setIsbn(dto.getIsbn());
         book.setPublisherName(dto.getPublisherName()); // Nuevo campo
         book.setStockStatus(dto.getStockStatus());
-        book.setCoverImage(dto.getCoverImage()); // Nuevo campo
         return book;
     }
 }

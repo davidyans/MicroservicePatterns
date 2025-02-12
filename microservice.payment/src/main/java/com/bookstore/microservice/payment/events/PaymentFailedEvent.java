@@ -11,5 +11,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class PaymentFailedEvent implements Serializable {
     private Integer orderId;
-    private String reason;  // Mensaje de error
+    private String reason;
 }

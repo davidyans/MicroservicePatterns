@@ -8,6 +8,6 @@ public interface InventoryService {
     List<InventoryDTO> getAllItems();
     InventoryDTO getItemById(Integer bookId);
     InventoryDTO addItem(InventoryDTO inventoryDTO);
-    InventoryDTO updateItem(Integer bookId, Integer quantity);
+    InventoryDTO updateItem(Integer bookId, InventoryDTO inventoryDTO);
     void deleteItem(Integer bookId);
 }

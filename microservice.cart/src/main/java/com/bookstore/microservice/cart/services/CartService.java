@@ -16,4 +16,5 @@ public interface CartService {
     CartDetailDTO addItemToCart(Integer cartId, CartDetailDTO cartDetailDTO);
     CartDetailDTO updateCartItem(Integer cartId, Integer cartDetailId, CartDetailDTO cartDetailDTO);
     void deleteCartItem(Integer cartId, Integer cartDetailId);
+    void deleteAllCartItems(Integer cartId);
 }

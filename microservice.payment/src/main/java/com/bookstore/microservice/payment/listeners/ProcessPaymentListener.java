@@ -31,7 +31,6 @@ public class ProcessPaymentListener {
         System.out.println("Received ProcessPaymentCommand for OrderID: " + command.getOrderId());
 
         try {
-            // 1. Simular lógica de cobro o validación
             Payment payment = new Payment();
             payment.setOrderId(command.getOrderId());
             payment.setAmount(command.getAmount());
@@ -39,17 +38,13 @@ public class ProcessPaymentListener {
             payment.setPayMethod(command.getPayMethod() != null ? command.getPayMethod() : "CREDIT_CARD");
 
             if (command.getAmount() == null || command.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-                // Invalid amount -> falla
                 payment.setStatus("FAILED");
             } else {
-                // Pago exitoso (ejemplo trivial)
                 payment.setStatus("COMPLETED");
             }
 
-            // 2. Guardar en BD
             Payment saved = paymentRepository.save(payment);
 
-            // 3. Publicar el evento de resultado
             if ("COMPLETED".equals(saved.getStatus())) {
                 PaymentCompletedEvent completedEvent = new PaymentCompletedEvent(
                         saved.getOrderId(),

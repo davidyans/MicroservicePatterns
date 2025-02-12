@@ -29,7 +29,6 @@ public class RabbitMQConfig {
     public static final String INVENTORY_RESERVE_FAILED_RK = "inventory.reserve.failed";
 
     // Exchange donde Order MS escucha actualizaciones de orden
-    // (o podrías usar el mismo 'order.exchange' con otra routingKey)
     public static final String ORDER_STATUS_UPDATE_RK = "order.status.update";
 
     // Cola para que el Orchestrator escuche "OrderCreated"
@@ -43,8 +42,7 @@ public class RabbitMQConfig {
     public static final String ORCH_INVENTORY_RESERVED_QUEUE = "orchestrator.inventoryreserved.queue";
     public static final String ORCH_INVENTORY_RESERVE_FAILED_QUEUE = "orchestrator.inventoryfailed.queue";
 
-
-    // 1. Declara Exchange(s)
+    // Exchanges
     @Bean
     public DirectExchange orderExchange() {
         return new DirectExchange(ORDER_EXCHANGE);
@@ -86,7 +84,7 @@ public class RabbitMQConfig {
         return new Queue(ORCH_INVENTORY_RESERVE_FAILED_QUEUE, true);
     }
 
-    // 3. Bindings
+    // Bindings
     @Bean
     public Binding orderCreatedBinding(Queue orchOrderCreatedQueue, DirectExchange orderExchange) {
         return BindingBuilder

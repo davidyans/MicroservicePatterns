@@ -4,7 +4,6 @@ import com.bookstore.microservice.cart.domain.Cart;
 import com.bookstore.microservice.cart.domain.CartDetail;
 import com.bookstore.microservice.cart.dto.CartDTO;
 import com.bookstore.microservice.cart.dto.CartDetailDTO;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class CartMapper {

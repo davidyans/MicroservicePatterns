@@ -22,23 +22,20 @@ public class OrderCreatedEventListener {
 
     @RabbitListener(queues = RabbitMQConfigQuery.ORDER_CREATED_QUEUE_QUERY)
     public void handleOrderCreated(OrderCreatedEvent event) {
-        // Evitar duplicados si ya existe
         var existingOpt = orderHistoryRepository.findByOrderId(event.getOrderId());
         if (existingOpt.isPresent()) {
             System.out.println("[order-query] La orden " + event.getOrderId() + " ya existe. Ignorar.");
             return;
         }
 
-        // Crear OrderHistory
+        // OrderHistory
         OrderHistory oh = new OrderHistory();
         oh.setOrderId(event.getOrderId());
         oh.setOrderDate(LocalDateTime.now());
-        // Podrías usar la fecha que venga en el evento si existe
         oh.setTotal(event.getTotal() != null ? event.getTotal() : BigDecimal.ZERO);
         oh.setStatus("CREATED");
         oh.setUpdatedDate(LocalDateTime.now());
 
-        // Construir detalles
         var details = new ArrayList<OrderHistoryDetail>();
         if (event.getOrderDetails() != null) {
             for (OrderDetailDTO detailDTO : event.getOrderDetails()) {
@@ -52,7 +49,6 @@ public class OrderCreatedEventListener {
         }
         oh.setOrderDetails(details);
 
-        // Guardar
         orderHistoryRepository.save(oh);
         System.out.println("[order-query] Procesado OrderCreatedEvent. Orden "
                 + event.getOrderId() + " guardada en order_history.");

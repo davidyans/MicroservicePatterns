@@ -7,25 +7,23 @@ import com.bookstore.order_command.repository.OrderRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderCreatedListenerFromOriginal {
 
     @Autowired
-    private OrderRepository orderRepository;  // Repositorio JPA de este nuevo microservicio
-    // O el servicio que maneje la lógica
+    private OrderRepository orderRepository;
 
-    @RabbitListener(queues = RabbitMQConfigCommand.ORDER_CREATED_QUEUE_COMMAND)
+    @Transactional
+    @RabbitListener(queues = RabbitMQConfigCommand.ORDER_CREATED_QUEUE_COMMAND, containerFactory = "rabbitListenerContainerFactory")
     public void handleOrderCreated(OrderCreatedEvent event) {
-        // Verificamos si la orden ya existe aquí, para evitar duplicados
         boolean exists = orderRepository.existsById(event.getOrderId());
         if (!exists) {
-            // Crear y guardar la orden en la BD local de order-command
             Order newOrder = new Order();
             newOrder.setOrderId(event.getOrderId());
             newOrder.setStatus("CREATED");
             newOrder.setOrderDate(java.time.LocalDateTime.now());
-            // O si quieres usar un campo event.getOrderDate() si lo tuvieras
 
             // Llenar detalles
             if (event.getOrderDetails() != null) {

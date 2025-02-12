@@ -30,10 +30,6 @@ public class Book {
 
     private String publisherName;
 
-    @Lob
-    @Column(columnDefinition = "BYTEA")
-    private byte[] coverImage;
-
     private Integer stockStatus = 1;
 
     @Column(updatable = false)

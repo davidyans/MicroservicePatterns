@@ -18,7 +18,6 @@ public class OrderStatusUpdateEventListener {
 
     @RabbitListener(queues = RabbitMQConfigQuery.ORDER_STATUS_UPDATE_QUEUE_QUERY)
     public void handleOrderStatusUpdate(OrderStatusUpdateEvent event) {
-        // Buscar la orden por orderId
         var optional = orderHistoryRepository.findByOrderId(event.getOrderId());
         if (optional.isPresent()) {
             OrderHistory oh = optional.get();

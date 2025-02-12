@@ -16,7 +16,7 @@ public class RabbitMQConfigQuery {
     public static final String ORDER_CREATED_RK = "order.created";
     public static final String ORDER_STATUS_UPDATE_RK = "order.status.update";
 
-    // Colas exclusivas para este Query MS
+    // Colas exclusivas
     public static final String ORDER_CREATED_QUEUE_QUERY = "order.created.queue.query";
     public static final String ORDER_STATUS_UPDATE_QUEUE_QUERY = "order.status.update.queue.query";
 

@@ -92,14 +92,34 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDetailDTO addItemToCart(Integer cartId, CartDetailDTO dto) {
         validateBookExists(dto.getBookId());
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
-        CartDetail detail = CartMapper.toCartDetailEntity(dto);
-        cart.addItem(detail);
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found with ID: " + cartId));
+
+        CartDetail existingDetail = cart.getDetails()
+                .stream()
+                .filter(detail -> detail.getBookId().equals(dto.getBookId()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingDetail != null) {
+
+            existingDetail.setQuantity(existingDetail.getQuantity() + dto.getQuantity());
+            existingDetail.setUnitPrice(dto.getUnitPrice());
+        } else {
+            CartDetail newDetail = CartMapper.toCartDetailEntity(dto);
+            cart.addItem(newDetail);
+        }
+
         cartRepository.save(cart);
 
-        return CartMapper.toCartDetailDTO(detail);
+        return CartMapper.toCartDetailDTO(
+                existingDetail != null ? existingDetail : cart.getDetails()
+                        .stream()
+                        .filter(detail -> detail.getBookId().equals(dto.getBookId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Error al agregar el ítem al carrito"))
+        );
     }
 
     @Override
@@ -126,6 +146,15 @@ public class CartServiceImpl implements CartService {
         cart.removeItem(cartDetailId);
         cart.markAsUpdated();
 
+        cartRepository.save(cart);
+    }
+
+    @Override
+    public void deleteAllCartItems(Integer cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found with id: " + cartId));
+
+        cart.getDetails().clear();
         cartRepository.save(cart);
     }
 

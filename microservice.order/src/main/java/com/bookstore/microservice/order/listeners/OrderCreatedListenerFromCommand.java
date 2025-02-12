@@ -12,22 +12,17 @@ import org.springframework.stereotype.Service;
 public class OrderCreatedListenerFromCommand {
 
     @Autowired
-    private OrderRepository orderRepository; // Repositorio del MS original
-    // O un servicio que encapsule la lógica
+    private OrderRepository orderRepository;
 
     @RabbitListener(queues = RabbitMQConfig.ORDER_CREATED_QUEUE_FROM_COMMAND)
     public void handleOrderCreatedFromCommand(OrderCreatedEvent event) {
-        // Verificamos si la orden ya existe para evitar duplicados
         boolean exists = orderRepository.existsById(event.getOrderId());
         if (!exists) {
-            // Crear y guardar la orden en la BD del MS original
             Order newOrder = new Order();
             newOrder.setOrderId(event.getOrderId());
             newOrder.setStatus("CREATED");
             newOrder.setOrderDate(java.time.LocalDateTime.now());
-            // O si en tu evento traes la fecha, podrías usarla
 
-            // Agregamos detalles si vienen en el evento
             if (event.getOrderDetails() != null) {
                 event.getOrderDetails().forEach(detail -> {
                     newOrder.addItem(

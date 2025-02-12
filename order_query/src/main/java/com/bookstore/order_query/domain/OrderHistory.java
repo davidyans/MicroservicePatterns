@@ -1,5 +1,6 @@
 package com.bookstore.order_query.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ public class OrderHistory {
     private LocalDateTime updatedDate;
 
     @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<OrderHistoryDetail> orderDetails = new ArrayList<>();
 
     public Long getOrderHistoryId() {
