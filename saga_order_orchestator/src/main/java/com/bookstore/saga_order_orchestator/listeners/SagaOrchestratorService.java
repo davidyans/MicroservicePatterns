@@ -86,14 +86,10 @@ public class SagaOrchestratorService {
         System.out.println(">>> [Orchestrator] Saga COMPLETED for OrderID: " + event.getOrderId());
     }
 
-    // 5. Escuchar "InventoryReservationFailedEvent"
+    // Escuchar "InventoryReservationFailedEvent"
     @RabbitListener(queues = RabbitMQConfig.ORCH_INVENTORY_RESERVE_FAILED_QUEUE)
     public void handleInventoryReservationFailed(InventoryReservationFailedEvent event) {
         System.out.println(">>> [Orchestrator] InventoryReservationFailedEvent for OrderID: " + event.getOrderId());
-
-        // Compensar => (Opcional) liberar pago, si corresponde
-        // y Cancelar la orden
-        // rabbitTemplate.convertAndSend(PAYMENT_EXCHANGE, "payment.refund", new RefundCommand(...));
 
         updateOrderStatus(event.getOrderId(), "CANCELLED");
         System.out.println(">>> [Orchestrator] Saga CANCELLED for OrderID: " + event.getOrderId());
